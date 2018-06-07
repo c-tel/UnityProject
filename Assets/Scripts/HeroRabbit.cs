@@ -12,9 +12,13 @@ public class HeroRabbit : MonoBehaviour {
 	float JumpTime = 0f;
 	public float MaxJumpTime = 2f;
 	public float JumpSpeed = 2f;
-	
+	private bool enlarged;
+
+	Transform heroParent = null;
+
 	// Use this for initialization
 	void Start  () {
+		this.heroParent = this.transform.parent;
 		value = Input.GetAxis ("Horizontal");
 		myBody = this.GetComponent<Rigidbody2D> ();
 		LevelController.current.setStartPosition (transform.position);
@@ -47,7 +51,19 @@ public class HeroRabbit : MonoBehaviour {
 		int layer_id = 1 << LayerMask.NameToLayer ("Ground");
 		RaycastHit2D hit = Physics2D.Linecast(fr, to, layer_id);
 		isGrounded = hit;
-		
+
+		if(hit) {
+			//Перевіряємо чи ми опинились на платформі
+			if(hit.transform != null
+				&& hit.transform.GetComponent<MovingPlatform>() != null){
+				//Приліпаємо до платформи
+				SetNewParent(this.transform, hit.transform);
+			}
+		} else {
+			//Ми в повітрі відліпаємо під платформи
+			SetNewParent(this.transform, this.heroParent);
+		}
+
 		if (Input.GetButtonDown("Jump") && isGrounded)
 			this.JumpActive = true;
 		
@@ -65,5 +81,43 @@ public class HeroRabbit : MonoBehaviour {
 			}
 		}
 		
+	}
+
+	static void SetNewParent(Transform obj, Transform new_parent) {
+		if(obj.transform.parent != new_parent) {
+			//Засікаємо позицію у Глобальних координатах
+			Vector3 pos = obj.transform.position;
+			//Встановлюємо нового батька
+			obj.transform.parent = new_parent;
+			//Після зміни батька координати кролика зміняться
+			//Оскільки вони тепер відносно іншого об’єкта
+			//повертаємо кролика в ті самі глобальні координати
+			obj.transform.position = pos;
+		}
+	}
+
+	public void AnimatedDeath(){
+		Animator animator = GetComponent<Animator> ();
+		animator.SetTrigger ("deathly hit");
+	}
+
+	public void Death(){
+		LevelController.current.onRabbitDeath (this);
+	}
+
+	public bool Enlarged(){
+		return enlarged;
+	}
+
+	public void Enlarge(){
+		if (enlarged)
+			return;
+		this.enlarged = true;
+		this.transform.localScale = new Vector3 (1.5f, 1.5f, 1f);
+	}
+
+	public void Reduce(){
+		this.enlarged = false;
+		this.transform.localScale = new Vector3 (1f, 1f, 1f);
 	}
 }
