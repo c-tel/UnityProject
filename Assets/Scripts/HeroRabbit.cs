@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class HeroRabbit : MonoBehaviour {
+	public static HeroRabbit lastRabbit;
 	public float speed = 1;
 	float value;
 	Rigidbody2D myBody = null;
@@ -15,6 +16,11 @@ public class HeroRabbit : MonoBehaviour {
 	private bool enlarged;
 
 	Transform heroParent = null;
+
+	void Awake(){
+		lastRabbit = this;
+		this.gameObject.name = "HeroRabbit";
+	}
 
 	// Use this for initialization
 	void Start  () {
@@ -97,12 +103,14 @@ public class HeroRabbit : MonoBehaviour {
 	}
 
 	public void AnimatedDeath(){
+		myBody.velocity = Vector2.zero;
 		Animator animator = GetComponent<Animator> ();
-		animator.SetTrigger ("deathly hit");
+		animator.SetTrigger ("deathly_hit");
 	}
 
 	public void Death(){
 		LevelController.current.onRabbitDeath (this);
+		GetComponent<Animator> ().SetTrigger ("reset");
 	}
 
 	public bool Enlarged(){
