@@ -8,7 +8,7 @@ public class HeroFollow : MonoBehaviour {
 	
 	// Use this for initialization
 	void Start () {
-		
+        rabit = HeroRabbit.lastRabbit;
 	}
 	
 	// Update is called once per frame

@@ -1,11 +1,22 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Crystal : Collectable {
+public class Crystal : Collectable
+{
+    public enum CrystalType
+    {
+        Green,
+        Blue,
+        Red
+    }
 
-	protected override void OnRabbitHit(HeroRabbit rabbit) {
-		Destroy (this.gameObject);
-	}
+    public CrystalType ct;
 
+    protected override void OnRabbitHit(HeroRabbit rabbit)
+    {
+        LevelController.current.CollectedCrystal(ct);
+        Destroy(gameObject);
+    }
 }

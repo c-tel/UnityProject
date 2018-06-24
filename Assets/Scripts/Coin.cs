@@ -5,7 +5,8 @@ using UnityEngine;
 public class Coin : Collectable {
 
 	protected override void OnRabbitHit(HeroRabbit rabbit) {
-		Destroy (this.gameObject);
+		LevelController.current.AddCoin();
+		Destroy (gameObject);
 	}
 
 }
